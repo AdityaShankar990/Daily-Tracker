@@ -32,11 +32,11 @@ daily-tracker/
 │       ├── gdrive.js
 │       ├── lofi.js
 │       └── events.js
-├── icons/
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   └── icon128.png
+└──  icons/
+    ├── icon16.png
+    ├── icon32.png
+    ├── icon48.png
+    └── icon128.png
 ```
 
 ## Run as web app
