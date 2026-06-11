@@ -1,6 +1,6 @@
 # Daily Tracker
 
-A local-first productivity app and it supports **Browser extension** too.
+A local-first productivity app that supports **Browser extension** too.
 
 <p align="center"><img src="demo/daily-tracker-demo1.png"/></p>
 <p align="center"><img src="demo/daily-tracker-demo2.png"/></p>
