@@ -2,8 +2,8 @@
 
 A local-first productivity app and it supports **Browser extension** too.
 
-<p align="center"><img src="demo/daily-tracker-demo1.png" width="75%"/></p>
-<p align="center"><img src="demo/daily-tracker-demo2.png" width="75%"/></p>
+<p align="center"><img src="demo/daily-tracker-demo1.png"/></p>
+<p align="center"><img src="demo/daily-tracker-demo2.png"/></p>
 
 ## How it works
 
@@ -32,7 +32,7 @@ python3 -m http.server 3000
 ```
 
 ## Browser extension installation
-<p align="center"><img src="demo/daily-tracker-demo3.png" width="75%"/></p>
+<p align="center"><img src="demo/daily-tracker-demo3.png"/></p>
 
 ### Chrome / Edge / Brave
 1. Go to `chrome://extensions`
