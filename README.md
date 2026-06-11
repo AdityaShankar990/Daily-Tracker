@@ -10,9 +10,9 @@ A local-first productivity app that works as a **web app** and a **browser exten
 ```
 daily-tracker/
 ├── index.html                  # Web app
-├── extension-version.html      # Browser extension popup
+├── extension-version.html      # Browser extension
 ├── manifest.json
-├── vercel.json
+├── vercel.json                 # Vercel
 ├── assets/
 │   ├── css/
 │   │   └── styles.css
