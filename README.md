@@ -37,10 +37,6 @@ daily-tracker/
 │   ├── icon32.png
 │   ├── icon48.png
 │   └── icon128.png
-└── demo/
-    ├── daily-tracker-demo1.png
-    ├── daily-tracker-demo2.png
-    └── daily-tracker-demo3.png
 ```
 
 ## Run as web app
