@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+        <title>dailytracker</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"/>
+        <link rel="stylesheet" href="assets/css/styles.css"/>
+    </head>
+    <body>
+        <div class="app">
+            <header>
+                <div class="brand">
+                    <div class="brand-mark">DT</div>
+                    Daily Tracker
+                    <span class="brand-version">v1</span>
+                </div>
+                <div class="header-r">
+                    <div class="lofi-player" title="Lofi focus music">
+                        <button
+                            class="cassette-btn"
+                            id="lofiBtn"
+                            onclick="lofiToggle()"
+                            aria-label="Play lofi music">
+                            <div class="cassette-disc" id="cassettDisc"></div>
+                        </button>
+                        <div class="lofi-label-wrap">
+                            <div class="lofi-label" id="lofiLabel">LOFI</div>
+                            <div class="lofi-sublabel" id="lofiSub">paused</div>
+                        </div>
+                    </div>
+                    <span id="syncIndicator">idle</span>
+                    <div class="date-btn" id="dateBtnWrap">
+                        <span id="dateLabel">--</span>
+                        <button
+                            class="date-chevron-btn"
+                            id="dateChevronBtn"
+                            onclick="toggleCal(event)"
+                            title="Open calendar"
+                            aria-label="Open calendar">
+                            <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                id="dateChevronSvg">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <input
+                            type="date"
+                            id="datePicker"
+                            class="date-hidden"
+                            onchange="onDateChange()"/>
+                    </div>
+                </div>
+            </header>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('tasks', this)">Tasks</button>
+                <button class="tab-btn" onclick="switchTab('timer', this)">Timer</button>
+                <button class="tab-btn" onclick="switchTab('sites', this)">Sites</button>
+                <button class="tab-btn" onclick="switchTab('weekly', this)">Reports</button>
+                <button class="tab-btn" onclick="switchTab('manage', this)">Manage</button>
+            </div>
+            <!-- TASKS -->
+            <div id="tab-tasks" class="tab-panel active">
+                <div id="taskStats" class="stat-cards"></div>
+                <div class="tasks-layout">
+                    <div class="tasks-main">
+                        <div class="card">
+                            <div class="card-title" id="tasksCardTitle">
+                                TASKS
+                                <small
+                                    id="dateLabel2"
+                                    style="
+                                        color: var(--muted);
+                                        font-weight: 400;
+                                        font-size: 12px;
+                                        text-transform: none;
+                                        letter-spacing: 0;
+                                        margin-left: 6px;">
+								</small>
+                            </div>
+                            <div id="taskList"><div class="empty">Loading...</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- TIMER -->
+            <div id="tab-timer" class="tab-panel">
+                <div class="card" style="position: relative">
+                    <div class="card-title" id="timerCardHeader">TIMER</div>
+                    <div class="timer-display">
+                        <div class="timer-clock" id="clock">00:00:00</div>
+                        <div class="timer-lbl" id="clockLbl">READY TO FOCUS</div>
+                    </div>
+                    <div class="timer-ctl">
+                        <div id="btnStartWrap">
+                            <button class="btn" id="btnStart" onclick="timerStart()">
+                                <span id="btnStartText">Start</span>
+                                <span id="btnStartLock" style="display: none; line-height: 0">
+                                    <svg
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 20 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle
+                                            cx="10"
+                                            cy="10"
+                                            r="8.5"
+                                            fill="#e8576a"
+                                            stroke="#c0202f"
+                                            stroke-width="1"/>
+                                        <line
+                                            x1="3.5"
+                                            y1="3.5"
+                                            x2="16.5"
+                                            y2="16.5"
+                                            stroke="white"
+                                            stroke-width="2.2"
+                                            stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                        <button
+                            class="btn"
+                            id="btnPause"
+                            onclick="timerPause()"
+                            style="display: none">
+                            Pause
+                        </button>
+                        <button
+                            class="btn"
+                            id="btnResume"
+                            onclick="timerResume()"
+                            style="display: none">
+                            Resume
+                        </button>
+                        <button
+                            class="btn"
+                            id="btnStop"
+                            onclick="timerStop()"
+                            style="display: none">
+                            Stop &amp; Save
+                        </button>
+                    </div>
+                    <!-- TIMER::PIP -->
+                    <button
+                        id="pipBtn"
+                        onclick="togglePip()"
+                        title="Picture-in-Picture timer"
+                        style="
+                            position: absolute;
+                            bottom: 14px;
+                            right: 14px;
+                            background: none;
+                            border: 1px solid var(--border);
+                            border-radius: 6px;
+                            padding: 5px 8px;
+                            cursor: pointer;
+                            color: var(--muted);
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                            font-size: 11px;
+                            font-family: var(--mono);
+                            letter-spacing: 0.04em;
+                            transition:
+                                color 0.15s,
+                                border-color 0.15s;">
+                        <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <rect
+                                x="12"
+                                y="11"
+                                width="9"
+                                height="6"
+                                rx="1"
+                                fill="currentColor"
+                                stroke="none"
+                                opacity=".35"/>
+                            <rect x="12" y="11" width="9" height="6" rx="1"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        Sessions Today <small id="timerTotalBadge"></small>
+                    </div>
+                    <div id="sessions"><div class="empty">No sessions yet</div></div>
+                </div>
+            </div>
+            <!-- SITES -->
+            <div id="tab-sites" class="tab-panel">
+                <div id="sitesStats" class="sites-stats"></div>
+                <div class="card" style="padding: 18px">
+                    <div
+                        class="card-title"
+                        id="sitesCardTitle"
+                        style="
+                            font-size: 13px;
+                            font-weight: 700;
+                            margin-bottom: 14px;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            letter-spacing: 0.01em;
+                            text-transform: uppercase;
+                            color: var(--muted);">SITES
+                    </div>
+                    <div id="siteGrid" class="site-grid"></div>
+                </div>
+            </div>
+            <!-- REPORTS -->
+            <div id="tab-weekly" class="tab-panel">
+                <div class="card">
+                    <div class="card-title">STUDY HOURS</div>
+                    <div class="perf-header">
+                        <div class="perf-month-nav">
+                            <button class="perf-month-btn" onclick="perfNav(-1)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M15 18l-6-6 6-6"
+                                        stroke-width="2"
+                                        stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button class="perf-month-btn" id="perfMonthBtn">June 2026</button>
+                            <button class="perf-month-btn" onclick="perfNav(1)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M9 18l6-6-6-6"
+                                        stroke-width="2"
+                                        stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="perf-range-btns">
+                            <button class="perf-range-btn" onclick="setPerfRange('WEEK', this)">
+                                WEEK
+                            </button>
+                            <button
+                                class="perf-range-btn active"
+                                onclick="setPerfRange('MONTH', this)">
+                                MONTH
+                            </button>
+                        </div>
+                    </div>
+                    <div class="perf-daterange">
+                        <span id="perfRangeLabel"></span>
+                    </div>
+                    <div id="monthPerformanceChart"></div>
+                    <div class="perf-stats" id="perfStats"></div>
+                </div>
+                <!-- HABITS -->
+                <div class="card" id="logHistoryCard" style="margin-top: 14px">
+                    <div class="card-title">HABITS</div>
+                    <div class="perf-header">
+                        <div class="perf-month-nav">
+                            <button class="perf-month-btn" onclick="habitsNav(-1)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M15 18l-6-6 6-6"
+                                        stroke-width="2"
+                                        stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button class="perf-month-btn" id="habitsMonthBtn">June 2026</button>
+                            <button class="perf-month-btn" onclick="habitsNav(1)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M9 18l6-6-6-6"
+                                        stroke-width="2"
+                                        stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="perf-range-btns">
+                            <button
+                                class="perf-range-btn active"
+                                id="habRangeWeek"
+                                onclick="setHabitsRange('WEEK', this)">
+                                WEEK
+                            </button>
+                            <button
+                                class="perf-range-btn"
+                                id="habRangeMonth"
+                                onclick="setHabitsRange('MONTH', this)">
+                                MONTH
+                            </button>
+                        </div>
+                    </div>
+                    <div class="perf-daterange">
+                        <span id="habitsRangeLabel"></span>
+                    </div>
+                    <div id="logHistory"></div>
+                    <br />
+                    <div id="logList" style="margin-top: 6px"></div>
+                    <div id="addHabitSection">
+                        <div
+                            style="
+                                font-size: 11px;
+                                font-weight: 700;
+                                text-transform: uppercase;
+                                letter-spacing: 0.07em;
+                                color: var(--muted);
+                                margin-bottom: 10px;
+                                margin-top: 14px;">Add New Habit
+                        </div>
+                        <div class="log-add-row">
+                            <input id="logNewName" placeholder="Habit name..." autocomplete="off"/>
+                            <select id="logNewType">
+                                <option value="toggle">Yes/No</option>
+                                <option value="number">Number</option>
+                            </select>
+                            <input
+                                id="logNewUnit"
+                                placeholder="Unit..."
+                                autocomplete="off"
+                                style="width: 80px; flex: 0 0 80px"/>
+                            <button class="btn primary sm" onclick="addLogItem()">Add Habit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- MANAGE -->
+            <div id="tab-manage" class="tab-panel">
+                <div class="card">
+                    <div class="card-title" id="manageTasksTitle">TASKS</div>
+                    <div id="manageList"></div>
+                    <div class="btn-row" id="newTaskBtnRow">
+                        <button class="btn primary" onclick="openTaskModal()">Add Task</button>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 14px">
+                    <div class="card-title" id="manageSitesTitle">Sites</div>
+                    <div id="manageSiteList"></div>
+                    <div class="btn-row" id="addSiteBtnRow">
+                        <button class="btn primary" onclick="openSiteModal()">Add Site</button>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 14px">
+                    <div class="card-title" style="color: var(--muted)">USER DATA</div>
+                    <div id="gdSignedOut">
+                        <p
+                            style="
+                                font-size: 12px;
+                                color: var(--muted);
+                                margin-bottom: 12px;
+                                line-height: 1.7;">
+								Sync your data to Google Drive using a short-lived access token from the OAuth 2.0 Playground.<br/>
+                        </p>
+                        <div
+                            style="
+                                background: var(--bg);
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                padding: 12px 14px;
+                                margin-bottom: 14px;
+                                font-size: 12px;
+                                line-height: 1.85;
+                                color: var(--muted);">
+                            <div
+                                style="
+                                    font-size: 11px;
+                                    font-weight: 700;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.07em;
+                                    color: var(--muted);
+                                    margin-bottom: 8px;">
+                                How to get a token
+                            </div>
+                            <ol
+                                style="
+                                    padding-left: 18px;
+                                    margin: 0;
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 3px;">
+                                <li>
+                                    Open
+                                    <a
+                                        href="https://developers.google.com/oauthplayground"
+                                        target="_blank"
+                                        style="color: var(--muted); font-weight: 600"
+                                        >OAuth 2.0 Playground
+									</a>
+                                </li>
+                                <li>
+                                    In the right panel, paste scope:
+                                    <code
+                                        style="
+                                            font-family: var(--mono);
+                                            font-size: 10px;
+                                            color: var(--muted);
+                                            font-weight: 600;">
+										https://www.googleapis.com/auth/drive.file
+									</code>
+                                </li>
+                                <li>
+                                    Click <b style="color: var(--muted)">Authorize APIs</b> then
+                                    sign in with Google
+                                </li>
+                                <li>
+                                    Click<b style="color: var(--muted)">Exchange authorization code for tokens</b>
+                                </li>
+                                <li>
+                                    Copy the <b style="color: var(--muted)">Access token</b> and paste below
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="field">
+                            <label>Access Token</label>
+                            <input
+                                id="gdAccessToken"
+                                type="password"
+                                placeholder="Access token..."
+                                autocomplete="off"
+                                style="font-family: var(--mono); font-size: 12px"/>
+                        </div>
+                        <div
+                            class="btn-row"
+                            style="justify-content: space-between; align-items: center">
+                            <button class="btn" onclick="gdConnect()">Connect</button>
+                            <div style="display: flex; gap: 8px; margin-left: auto">
+                                <button class="btn" onclick="exportData()">Export JSON</button>
+                                <button class="btn" onclick="importData()">Import JSON</button>
+                            </div>
+                        </div>
+                        <div
+                            id="gdStatus"
+                            style="
+                                margin-top: 10px;
+                                font-size: 11px;
+                                font-family: var(--mono);
+                                color: var(--muted);"></div>
+                    </div>
+                    <div id="gdSignedIn" style="display: none">
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                margin-bottom: 14px;
+                                padding: 10px 14px;
+                                background: var(--surf2);
+                                border: 1px solid var(--border);
+                                border-radius: 8px;">
+                            <div
+                                id="gdAvatar"
+                                style="
+                                    width: 34px;
+                                    height: 34px;
+                                    border-radius: 50%;
+                                    background: transparent;
+                                    border: 1px solid var(--border);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 14px;
+                                    font-weight: 800;
+                                    color: var(--muted);
+                                    flex-shrink: 0;">
+								G
+                            </div>
+                            <div style="min-width: 0">
+                                <div
+                                    style="
+                                        font-size: 13px;
+                                        font-weight: 700;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;"
+                                    id="gdUserLabel">
+                                    Connected
+                                </div>
+                                <div
+                                    style="
+                                        font-size: 11px;
+                                        color: var(--muted);
+                                        font-family: var(--mono);
+                                        margin-top: 5px;"
+                                    id="gdLastSync">
+                                    Never synced
+                                </div>
+                            </div>
+                            <button
+                                class="manage-edit-btn"
+                                style="margin-left: auto; flex-shrink: 0"
+                                onclick="gdDisconnect()">
+                                Disconnect
+                            </button>
+                        </div>
+                        <div
+                            style="
+                                display: flex;
+                                gap: 8px;
+                                flex-wrap: wrap;
+                                justify-content: space-between;
+                                align-items: center;">
+                            <div style="display: flex; gap: 8px">
+                                <button class="btn" onclick="gdPush()">Save to Drive</button>
+                                <button class="btn" onclick="gdPull()">Restore from Drive</button>
+                            </div>
+                            <div style="display: flex; gap: 8px">
+                                <button class="btn" onclick="exportData()">Export JSON</button>
+                                <button class="btn" onclick="importData()">Import JSON</button>
+                            </div>
+                        </div>
+                        <div
+                            id="gdStatusIn"
+                            style="
+                                margin-top: 10px;
+                                font-size: 11px;
+                                font-family: var(--mono);
+                                color: var(--muted);">
+						</div>
+                    </div>
+                    <input
+                        type="file"
+                        id="importFile"
+                        accept=".json"
+                        style="display: none"
+                        onchange="handleImport(event)"/>
+                </div>
+            </div>
+        </div>
+        <!-- TASK -->
+        <div class="modal-bg" id="mTask">
+            <div class="modal">
+                <div class="modal-title" id="mTaskTitle">Add Task</div>
+                <div class="field">
+                    <label>Task Name</label>
+					<input id="tName" placeholder="Task name..." autocomplete="off"/>
+                </div>
+                <div class="field">
+                    <label>Duration</label>
+                    <div class="dur-row">
+                        <input
+                            type="number"
+                            id="tDurNum"
+                            placeholder="Duration..."
+                            min="1"
+                            max="999"
+                            autocomplete="off"/>
+                        <select id="tDurUnit">
+                            <option value="min">min</option>
+                            <option value="hrs">hrs</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field" style="margin-bottom: 14px">
+                    <label>Schedule Time</label>
+                    <input type="time" id="tSchedStart" oninput="calcSchedEnd()"/>
+                    <div
+                        id="schedCalc"
+                        class="sched-info"
+                        style="display: none; margin-top: 8px">
+					</div>
+                </div>
+                <div class="field">
+                    <label>Schedule Day</label>
+                    <div
+                        id="dayPicker"
+                        style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px">
+					</div>
+                </div>
+                <div class="btn-row">
+                    <button class="btn primary" onclick="saveTask()">Save</button>
+                    <button class="btn" onclick="closeMTask()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <!-- SITE -->
+        <div class="modal-bg" id="mSite">
+            <div class="modal">
+                <div class="modal-title" id="mSiteTitle">Add Site</div>
+                <div class="field">
+                    <label>SITE NAME</label>
+					<input id="sName" placeholder="Site name..." autocomplete="off"/>
+                </div>
+                <div class="field">
+                    <label>SITE URL</label>
+					<input id="sUrl" placeholder="Site url..." autocomplete="off" inputmode="url"/>
+                </div>
+                <div class="field">
+                    <label>SCHEDULE TIME</label><input id="sTime" type="time"/>
+                </div>
+                <div class="btn-row">
+                    <button class="btn primary" onclick="saveSite()">Add Site</button>
+                    <button class="btn" onclick="closeMSite()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="cal-backdrop" id="calBackdrop" onclick="closeCal()"></div>
+        <div class="cal-panel" id="calPanel">
+            <div class="cal-header">
+                <div class="cal-month-title">
+                    <span id="calMonthLabel">June 2026</span>
+                </div>
+                <div class="cal-nav">
+                    <button class="cal-nav-btn" onclick="calNav(-1)">&#8249;</button>
+                    <button class="cal-nav-btn" onclick="calNav(1)">&#8250;</button>
+                </div>
+            </div>
+            <div class="cal-legend">
+                <div class="cal-legend-item">
+                    <div class="leg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" width="12" height="12">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="11"
+                                fill="rgba(124,106,247,.25)"
+                                stroke="none"/>
+                            <path
+                                d="M7 12l3.5 3.5 7-7"
+                                stroke="var(--accent)"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    All Done
+                </div>
+                <div class="cal-legend-item">
+                    <div class="leg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" width="12" height="12">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="11"
+                                fill="rgba(64,201,168,.2)"
+                                stroke="none"/>
+                            <path d="M12 1a11 11 0 0 1 0 22V1z" fill="var(--ok)" stroke="none"/>
+                        </svg>
+                    </div>
+                    Partial
+                </div>
+                <div class="cal-legend-item">
+                    <div class="leg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" width="12" height="12">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="11"
+                                fill="rgba(232,147,74,.2)"
+                                stroke="none"/>
+                            <path
+                                d="M8 12h8"
+                                stroke="var(--a2)"
+                                stroke-width="2.5"
+                                stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    Left
+                </div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div class="upcoming-title">
+                UPCOMING EVENTS
+                <button class="add-event-btn" onclick="toggleEventForm()">Add Event</button>
+            </div>
+            <div class="event-form" id="eventForm">
+                <div class="field" style="margin-bottom: 8px">
+                    <input id="evName" placeholder="Event name..." autocomplete="off"/>
+                </div>
+                <div style="margin-bottom: 8px">
+                    <div class="field" style="margin-bottom: 0">
+                        <input type="date" id="evDate"/>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 6px; margin-bottom: 12px">
+                    <button
+                        class="btn sm"
+                        id="addEventSubmitBtn"
+                        onclick="addEvent()"
+                        style="
+                            background: var(--accent);
+                            border-color: var(--accent);
+                            color: #fff;
+                            font-weight: 700;">
+                        Add
+                    </button>
+                    <button class="btn sm" onclick="toggleEventForm()">Cancel</button>
+                </div>
+            </div>
+            <div id="eventList"></div>
+        </div>
+        <!-- MODULES -->
+        <script src="assets/js/ui.js"></script>
+        <script src="assets/js/helpers.js"></script>
+        <script src="assets/js/state.js"></script>
+        <script src="assets/js/storage.js"></script>
+        <script src="assets/js/calendar.js"></script>
+        <script src="assets/js/tasks.js"></script>
+        <script src="assets/js/manage.js"></script>
+        <script src="assets/js/timer.js"></script>
+        <script src="assets/js/sites.js"></script>
+        <script src="assets/js/reports.js"></script>
+        <script src="assets/js/log.js"></script>
+        <script src="assets/js/lofi.js"></script>
+        <script src="assets/js/gdrive.js"></script>
+        <script src="assets/js/init.js"></script>
+    </body>
+</html>
